@@ -1,4 +1,5 @@
-// 生成应用图标 assets/icon.png（512×512）：macOS 风格圆角蓝底 + 白色电池图形
+// 生成应用图标底图 assets/icon.png（512×512）：VGN 品牌黑白风 —— 近黑圆角块
+// "VGN" 字样由 scripts/add-vgn-text.ps1 大号居中合成（直接填充，无 V 标志）
 // 纯 Node 实现，无图像库依赖：SDF 绘制 + zlib PNG 编码
 import { deflateSync } from 'node:zlib'
 import { writeFileSync, mkdirSync } from 'node:fs'
@@ -34,34 +35,14 @@ for (let y = 0; y < SIZE; y++) {
     let b = 0
     let a = 0
 
-    // 背景：圆角方块 + 纵向蓝色渐变（#56ACFF → #0B69F8）
-    const bg = cov(sdRoundRect(x, y, 256, 256, 244, 244, 116))
+    // 背景：深色圆角块 + 纵向渐变（#1d1d1d → #0a0a0a），近黑
+    const bg = cov(sdRoundRect(x, y, 256, 256, 244, 244, 112))
     if (bg > 0) {
       const t = y / SIZE
-      r = mix(0x56, 0x0b, t)
-      g = mix(0xac, 0x69, t)
-      b = mix(0xff, 0xf8, t)
+      r = mix(0x1d, 0x0a, t)
+      g = r
+      b = r
       a = bg * 255
-    }
-
-    // 电池主体（白色圆角矩形）
-    const body = cov(sdRoundRect(x, y, 244, 256, 140, 82, 30))
-    // 电池正极凸头
-    const cap = cov(sdRoundRect(x, y, 408, 256, 14, 34, 8))
-    const white = Math.max(body, cap)
-    if (white > 0) {
-      r = mix(r, 255, white)
-      g = mix(g, 255, white)
-      b = mix(b, 255, white)
-      a = Math.max(a, white * 255)
-    }
-
-    // 内部电量填充（主题蓝，约 55%）
-    const fill = cov(sdRoundRect(x, y, 226, 256, 116, 58, 20))
-    if (fill > 0) {
-      r = mix(r, 0x1f, fill)
-      g = mix(g, 0x8b, fill)
-      b = mix(b, 0xff, fill)
     }
 
     px[i] = Math.round(r)
